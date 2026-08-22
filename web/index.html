@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>发稿台</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="desk">
+    <header class="rail">
+      <p class="brand">发稿台</p>
+      <label class="field">
+        <span>主题</span>
+        <select id="theme"></select>
+      </label>
+      <label class="check">
+        <input id="links" type="checkbox">
+        <span>文末链接</span>
+      </label>
+      <button id="open-btn" type="button">打开稿件</button>
+      <input id="file" type="file" accept=".md,.markdown,text/markdown,text/plain" hidden>
+      <span class="grow"></span>
+      <span class="hint" id="theme-label">终端</span>
+    </header>
+
+    <div class="work">
+      <section class="manuscript">
+        <p class="slab">原稿</p>
+        <textarea id="source" spellcheck="false"></textarea>
+      </section>
+      <section class="stage">
+        <p class="slab">校样</p>
+        <div class="proof-wrap">
+          <button class="seal" id="copy-btn" type="button" aria-label="复制到公众号">
+            <span class="seal-ring">
+              <span class="seal-kicker">公众号</span>
+              <span class="seal-word" id="copy-word">复制</span>
+            </span>
+          </button>
+          <div class="phone">
+            <div class="phone-screen" id="preview"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

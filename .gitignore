@@ -1,6 +1,7 @@
 node_modules/
 .DS_Store
 *.html
+!web/index.html
 /themes/
 wx-md-gallery.html
 *.tgz
