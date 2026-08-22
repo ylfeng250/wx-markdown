@@ -1,7 +1,7 @@
 {
-  "name": "@yanglingfeng/wx-markdown",
+  "name": "wx-markdown",
   "version": "1.0.0",
-  "description": "命令行把 Markdown 转成可粘贴到微信公众号的 HTML",
+  "description": "微信发稿台：命令行和网页把 Markdown 转成可粘贴到公众号的 HTML",
   "type": "module",
   "bin": {
     "wx-md": "bin/wx-md.js",
@@ -10,7 +10,7 @@
   "files": [
     "bin",
     "src",
-    "web",
+    "docs",
     "README.md",
     "LICENSE"
   ],
@@ -18,9 +18,10 @@
   "scripts": {
     "start": "node bin/wx-md.js",
     "serve": "node bin/wx-md.js serve",
+    "build:web": "node scripts/build-web.js",
     "demo": "node bin/wx-md.js examples/demo.md --no-copy",
     "link": "npm link",
-    "prepublishOnly": "node bin/wx-md.js --version"
+    "prepublishOnly": "npm run build:web && node bin/wx-md.js --version"
   },
   "engines": {
     "node": ">=18"
@@ -31,13 +32,14 @@
     "markdown",
     "html",
     "cli",
-    "公众号"
+    "公众号",
+    "发稿台"
   ],
   "author": "yanglingfeng",
   "license": "MIT",
-  "homepage": "https://www.npmjs.com/package/@yanglingfeng/wx-markdown",
+  "homepage": "https://www.npmjs.com/package/wx-markdown",
   "bugs": {
-    "url": "https://www.npmjs.com/package/@yanglingfeng/wx-markdown"
+    "url": "https://www.npmjs.com/package/wx-markdown"
   },
   "publishConfig": {
     "access": "public"
@@ -47,5 +49,8 @@
     "juice": "^12.1.2",
     "marked": "^15.0.12",
     "marked-highlight": "^2.2.4"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.9"
   }
 }

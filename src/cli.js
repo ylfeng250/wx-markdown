@@ -12,7 +12,7 @@ import { startServer } from './server.js';
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json');
 
-const HELP = `wx-md ${version} — Markdown 转微信公众号 HTML
+const HELP = `wx-md ${version} — 微信发稿台。Markdown 转微信公众号 HTML
 
 用法:
   wx-md <markdown文件> [选项]

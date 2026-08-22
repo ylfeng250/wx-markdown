@@ -1,11 +1,13 @@
+import { convertMarkdown, parseFrontMatter, themeCatalog } from '../src/web-convert.js';
+
 const SAMPLE = `---
-title: 发稿台
+title: 微信发稿台
 theme: tech
 ---
 
 # 把 Markdown 发到公众号
 
-左边写稿，右边看校样。点印章复制，再到公众号后台粘贴。
+左边写稿，右边看校样。点复制，再到公众号后台粘贴。
 
 ## 它会做什么
 
@@ -20,27 +22,17 @@ console.log('wx-md');
 \`\`\`
 `;
 
+const FAIL = '<p class="fail">转换失败，请检查稿件后重试。</p>';
+
 const state = {
   themes: {},
   theme: 'tech',
   linksAtEnd: true,
   timer: 0,
+  drag: 0,
 };
 
 const $ = (id) => document.getElementById(id);
-
-function parseFrontMatter(raw) {
-  if (!raw.startsWith('---')) return { meta: {} };
-  const end = raw.indexOf('\n---', 3);
-  if (end === -1) return { meta: {} };
-  const meta = {};
-  for (const line of raw.slice(3, end).split('\n')) {
-    const match = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (!match) continue;
-    meta[match[1]] = match[2].replace(/^['"]|['"]$/g, '').trim();
-  }
-  return { meta };
-}
 
 function fillThemes() {
   const select = $('theme');
@@ -48,43 +40,33 @@ function fillThemes() {
   for (const [name, pack] of Object.entries(state.themes)) {
     const option = document.createElement('option');
     option.value = name;
-    option.textContent = `${pack.meta.title} · ${name}`;
+    option.textContent = pack.meta.title;
     select.appendChild(option);
   }
   select.value = state.theme;
 }
 
-async function render() {
-  const raw = $('source').value;
-  const response = await fetch('/api/convert', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      markdown: raw,
+function render() {
+  try {
+    const result = convertMarkdown($('source').value, {
       theme: state.theme,
       linksAtEnd: state.linksAtEnd,
-    }),
-  });
-  if (!response.ok) {
-    $('preview').innerHTML = '<p style="color:#c73e2a">转换失败</p>';
-    return;
+    });
+    $('preview').innerHTML = result.html;
+    $('theme-label').textContent = state.themes[state.theme]?.meta.title || state.theme;
+  } catch {
+    $('preview').innerHTML = FAIL;
   }
-  const result = await response.json();
-  $('preview').innerHTML = result.html;
-  $('theme-label').textContent = state.themes[state.theme]?.meta.title || state.theme;
 }
 
 function scheduleRender() {
   clearTimeout(state.timer);
-  state.timer = setTimeout(() => {
-    render().catch(() => {
-      $('preview').innerHTML = '<p style="color:#c73e2a">转换失败</p>';
-    });
-  }, 180);
+  state.timer = setTimeout(render, 180);
 }
 
-function applyMarkdown(text) {
+function applyMarkdown(text, label) {
   $('source').value = text;
+  $('file-label').textContent = label || '原稿';
   const { meta } = parseFrontMatter(text);
   if (meta.theme && state.themes[meta.theme]) {
     state.theme = meta.theme;
@@ -95,10 +77,16 @@ function applyMarkdown(text) {
   scheduleRender();
 }
 
+function setCopyState(label, done) {
+  const button = $('copy-btn');
+  const word = $('copy-word');
+  word.textContent = label;
+  button.classList.toggle('is-done', done);
+}
+
 async function copyArticle() {
   const root = document.getElementById('wechat-content');
   if (!root) return;
-  const word = $('copy-word');
   try {
     if (navigator.clipboard && window.ClipboardItem) {
       await navigator.clipboard.write([
@@ -116,18 +104,20 @@ async function copyArticle() {
       document.execCommand('copy');
       selection.removeAllRanges();
     }
-    word.textContent = '已印';
-    setTimeout(() => {
-      word.textContent = '复制';
-    }, 1800);
+    setCopyState('已复制', true);
+    setTimeout(() => setCopyState('复制', false), 1600);
   } catch {
-    word.textContent = '失败';
+    setCopyState('失败', false);
   }
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
-  const payload = await fetch('/api/themes').then((res) => res.json());
-  state.themes = payload.themes;
+function setDragging(on) {
+  document.body.classList.toggle('is-dragging', on);
+  $('drop').setAttribute('aria-hidden', on ? 'false' : 'true');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  state.themes = themeCatalog();
   state.theme = 'tech';
   state.linksAtEnd = state.themes.tech.features.linksAtEnd;
   fillThemes();
@@ -151,15 +141,29 @@ window.addEventListener('DOMContentLoaded', async () => {
   $('file').addEventListener('change', async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    applyMarkdown(await file.text());
+    applyMarkdown(await file.text(), file.name);
     event.target.value = '';
   });
 
-  document.body.addEventListener('dragover', (event) => event.preventDefault());
-  document.body.addEventListener('drop', async (event) => {
+  document.addEventListener('dragenter', (event) => {
     event.preventDefault();
+    state.drag += 1;
+    setDragging(true);
+  });
+  document.addEventListener('dragover', (event) => event.preventDefault());
+  document.addEventListener('dragleave', () => {
+    state.drag -= 1;
+    if (state.drag <= 0) {
+      state.drag = 0;
+      setDragging(false);
+    }
+  });
+  document.addEventListener('drop', async (event) => {
+    event.preventDefault();
+    state.drag = 0;
+    setDragging(false);
     const file = event.dataTransfer?.files?.[0];
     if (!file) return;
-    applyMarkdown(await file.text());
+    applyMarkdown(await file.text(), file.name);
   });
 });

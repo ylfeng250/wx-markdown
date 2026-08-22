@@ -23,10 +23,10 @@ theme: tech
 
 ## 安装
 
-包名是 `@yanglingfeng/wx-markdown`，命令是 `wx-md` 或 `wx-markdown`。需要 Node.js 18 或更高版本。
+包名是 `wx-markdown`，命令是 `wx-md` 或 `wx-markdown`。需要 Node.js 18 或更高版本。
 
 ```bash
-npm i -g @yanglingfeng/wx-markdown
+npm i -g wx-markdown
 ```
 
 装好后任意目录都能用。
@@ -121,6 +121,6 @@ wx-md article.md --stdout > body.html
 wx-md -h
 ```
 
-项目在 npm：<https://www.npmjs.com/package/@yanglingfeng/wx-markdown>
+项目在 npm：<https://www.npmjs.com/package/wx-markdown>
 
 写完 md，就该发了。不必再为编辑器点一遍标题。

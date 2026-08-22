@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, extname, join, resolve } from 'node:path';
+import { parseBool } from './article.js';
 import {
   compileTheme,
   defaultTokens,
@@ -22,15 +23,6 @@ function normalizeFeatures(partial = {}, fallback = defaultFeatures) {
     linksAtEnd: partial.linksAtEnd ?? fallback.linksAtEnd ?? false,
     linksTitle: title || fallback.linksTitle || defaultFeatures.linksTitle,
   };
-}
-
-function parseBool(value) {
-  if (value === undefined || value === null || value === '') return undefined;
-  if (typeof value === 'boolean') return value;
-  const normalized = String(value).trim().toLowerCase();
-  if (['true', '1', 'yes', 'on'].includes(normalized)) return true;
-  if (['false', '0', 'no', 'off'].includes(normalized)) return false;
-  return undefined;
 }
 
 function featuresFromJson(data) {

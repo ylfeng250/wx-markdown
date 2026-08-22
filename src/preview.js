@@ -30,7 +30,7 @@ export function renderPreviewPage({
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(pageTitle)} · 发稿台</title>
+  <title>${escapeHtml(pageTitle)} · 微信发稿台</title>
   <style>
     :root {
       --desk: #2a231d;
@@ -217,7 +217,7 @@ export function renderPreviewPage({
 <body>
   <div class="desk">
     <header class="plate">
-      <p class="plate-brand">发稿台</p>
+      <p class="plate-brand">微信发稿台</p>
       <span class="plate-meta">${escapeHtml(theme)}</span>
     </header>
     <div class="slug">

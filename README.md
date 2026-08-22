@@ -1,13 +1,16 @@
-# wx-md
+# 微信发稿台
 
-把 Markdown 转成可粘贴到微信公众号的 HTML。提供命令行，以及本地网页发稿台。
+把 Markdown 转成可粘贴到微信公众号的 HTML。两条路：
+
+- **命令行**：本地处理 `.md`，写出 HTML 并复制到剪贴板
+- **在线发稿台**：浏览器里写稿、看校样、复制。页面是静态的，可放到 GitHub Pages、Cloudflare Pages、Netlify
 
 公众号会丢掉外部 CSS。转换时把颜色和间距写成内联样式，复制后到公众号后台粘贴即可。
 
 ## 安装
 
 ```bash
-npm i -g @yanglingfeng/wx-markdown
+npm i -g wx-markdown
 ```
 
 装好后命令是 `wx-md` 或 `wx-markdown`。
@@ -16,20 +19,42 @@ npm i -g @yanglingfeng/wx-markdown
 
 ```bash
 npm install
+npm run build:web
 npm link
 ```
 
-## 网页发稿台
+## 在线发稿台
+
+页面不依赖服务器接口，转换在浏览器里完成。本地预览：
 
 ```bash
+npm run build:web
 wx-md serve
 ```
 
-浏览器打开 `http://127.0.0.1:3210`。左边写 Markdown，右边看校样，点印章复制后去公众号后台粘贴。也可以把 `.md` 拖进页面，或点「打开稿件」。
+浏览器打开 `http://127.0.0.1:3210`。左边写 Markdown，右边看校样，点复制后去公众号后台粘贴。也可以把 `.md` 拖进页面，或点「打开稿件」。
 
 ```bash
 wx-md serve --port 4173 --no-open
 ```
+
+### 部署到静态托管
+
+构建产物在 `docs/`：
+
+```bash
+npm run build:web
+```
+
+| 平台 | 做法 |
+| --- | --- |
+| GitHub Pages | 仓库 Settings → Pages → Source 选 **GitHub Actions**。推到 `master` / `main` 后会跑 `.github/workflows/pages.yml`。也可以选 Deploy from a branch，目录填 `/docs` |
+| Cloudflare Pages | 构建命令 `npm run build:web`，输出目录 `docs` |
+| Netlify | 同上，Publish directory 填 `docs` |
+
+资源路径是相对的，挂在 `https://用户名.github.io/仓库名/` 下也能用。复制功能需要 HTTPS 或 localhost。
+
+在线发稿台只用内置主题。自定义主题请走命令行。
 
 ## 命令行
 
