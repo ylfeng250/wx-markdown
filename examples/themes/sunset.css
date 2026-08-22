@@ -1,0 +1,10 @@
+/* @wx-md extends ink */
+/* 在 ink 底稿上换成黄昏色 */
+
+#wechat-content h3 {
+  color: #c05621;
+}
+
+#wechat-content .task-done {
+  color: #c05621;
+}

@@ -1,0 +1,21 @@
+{
+  "name": "ocean",
+  "extends": "wechat",
+  "linksAtEnd": true,
+  "linksTitle": "参考链接",
+  "tokens": {
+    "accent": "#0B6E99",
+    "heading": "#12303A",
+    "text": "#334047",
+    "strong": "#12303A",
+    "link": "#0B6E99",
+    "quoteBg": "#F3F8FA",
+    "quoteText": "#5A6A72",
+    "codeBg": "#F4F7F8",
+    "codeInline": "#B42318",
+    "codeInlineBg": "#F0F5F7",
+    "border": "#D7E0E5",
+    "tableBorder": "#D7E0E5",
+    "tableHead": "#F3F8FA"
+  }
+}
