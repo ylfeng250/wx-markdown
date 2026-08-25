@@ -1,6 +1,6 @@
 {
   "name": "wx-markdown",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "微信发稿台：命令行和网页把 Markdown 转成可粘贴到公众号的 HTML",
   "type": "module",
   "bin": {

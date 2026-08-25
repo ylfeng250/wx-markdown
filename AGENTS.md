@@ -23,7 +23,7 @@ src/cli.js                参数、帮助、子命令
 src/article.js            共用：front matter、图片题注、任务框、包一层 #wechat-content
 src/links.js              文末链接
 src/themes.js             内置主题 token / 布局编译 / highlight 样式
-src/layouts-editorial.js  青瓷、暮色、折页、和纸、朱砂的版式
+src/layouts-editorial.js  青瓷、暮色、折页、和纸、朱砂、芙蕖、苔痕、沧浪、琥珀的版式
 src/theme-loader.js       CLI 读本地 JSON/CSS 主题（Node fs）
 src/convert.js            CLI 转换（juice 内联）
 src/web-convert.js        浏览器转换（不可 import node: / juice / theme-loader）
@@ -84,7 +84,7 @@ Node 18+。ESM only（`"type": "module"`）。
 
 ## 主题
 
-内置：`wechat` 青葱、`ink` 墨韵、`tech` 终端、`qing` 青瓷、`dusk` 暮色、`folio` 折页、`washi` 和纸、`cinnabar` 朱砂。
+内置：`wechat` 青葱、`ink` 墨韵、`tech` 终端、`qing` 青瓷、`dusk` 暮色、`folio` 折页、`washi` 和纸、`cinnabar` 朱砂、`lotus` 芙蕖、`moss` 苔痕、`tide` 沧浪、`amber` 琥珀。
 
 选择器写在 `#wechat-content` 下。`extends` 只能是上述名字或 `none`。CSS 主题指令：`@wx-md extends`、`@wx-md links-at-end`、`@wx-md links-title`。
 

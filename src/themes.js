@@ -1,8 +1,12 @@
 import {
+  compileAmberLayout,
   compileCinnabarLayout,
   compileDuskLayout,
   compileFolioLayout,
+  compileLotusLayout,
+  compileMossLayout,
   compileQingLayout,
+  compileTideLayout,
   compileWashiLayout,
 } from './layouts-editorial.js';
 
@@ -32,7 +36,21 @@ export const defaultTokens = {
 
 export const tokenKeys = Object.keys(defaultTokens);
 
-const layouts = ['wechat', 'ink', 'tech', 'qing', 'dusk', 'folio', 'washi', 'cinnabar', 'none'];
+const layouts = [
+  'wechat',
+  'ink',
+  'tech',
+  'qing',
+  'dusk',
+  'folio',
+  'washi',
+  'cinnabar',
+  'lotus',
+  'moss',
+  'tide',
+  'amber',
+  'none',
+];
 
 export function compileArticleCss(tokens) {
   const t = tokens;
@@ -665,6 +683,102 @@ export const presets = {
       headingLetterSpacing: '3px',
     },
   },
+  lotus: {
+    layout: 'lotus',
+    features: { linksAtEnd: true, linksTitle: '参考链接' },
+    tokens: {
+      ...defaultTokens,
+      accent: '#c47880',
+      heading: '#4a3538',
+      text: '#534348',
+      muted: '#a8989c',
+      link: '#a65d66',
+      strong: '#4a3538',
+      quoteBg: '#faf4f5',
+      quoteText: '#7a5c62',
+      codeBg: '#1c2128',
+      codeInline: '#a65d66',
+      codeInlineBg: '#f7f1f2',
+      codeBlock: '#e6edf3',
+      border: '#ecd8db',
+      tableBorder: '#ecd8db',
+      tableHead: '#f7f1f2',
+      letterSpacing: '0.5px',
+      headingLetterSpacing: '3px',
+    },
+  },
+  moss: {
+    layout: 'moss',
+    features: { linksAtEnd: true, linksTitle: '参考链接' },
+    tokens: {
+      ...defaultTokens,
+      accent: '#6b7f4a',
+      heading: '#2c3324',
+      text: '#3d4436',
+      muted: '#8a9180',
+      link: '#5a6b3e',
+      strong: '#2c3324',
+      quoteBg: '#f4f5ef',
+      quoteText: '#5c6650',
+      codeBg: '#1c2128',
+      codeInline: '#5a6b3e',
+      codeInlineBg: '#eef0e8',
+      codeBlock: '#e6edf3',
+      border: '#d4d8c4',
+      tableBorder: '#d4d8c4',
+      tableHead: '#eef0e8',
+      letterSpacing: '0.4px',
+      headingLetterSpacing: '1px',
+    },
+  },
+  tide: {
+    layout: 'tide',
+    features: { linksAtEnd: true, linksTitle: '参考链接' },
+    tokens: {
+      ...defaultTokens,
+      accent: '#2a6f7f',
+      heading: '#1e3338',
+      text: '#334448',
+      muted: '#7a9094',
+      link: '#2a6f7f',
+      strong: '#1e3338',
+      quoteBg: '#f0f5f6',
+      quoteText: '#4a646a',
+      codeBg: '#1c2128',
+      codeInline: '#2a6f7f',
+      codeInlineBg: '#e8f0f2',
+      codeBlock: '#e6edf3',
+      border: '#c5d6da',
+      tableBorder: '#c5d6da',
+      tableHead: '#e8f0f2',
+      letterSpacing: '0.35px',
+      headingLetterSpacing: '2px',
+    },
+  },
+  amber: {
+    layout: 'amber',
+    features: { linksAtEnd: true, linksTitle: '参考链接' },
+    tokens: {
+      ...defaultTokens,
+      accent: '#c47b2d',
+      heading: '#3d2e18',
+      text: '#4a3d2a',
+      muted: '#9a8b70',
+      link: '#9a6120',
+      strong: '#3d2e18',
+      quoteBg: '#faf6ee',
+      quoteText: '#6b5840',
+      codeBg: '#1c2128',
+      codeInline: '#9a6120',
+      codeInlineBg: '#f5efe3',
+      codeBlock: '#e6edf3',
+      border: '#e8dcc4',
+      tableBorder: '#e8dcc4',
+      tableHead: '#f5efe3',
+      letterSpacing: '0.4px',
+      headingLetterSpacing: '2px',
+    },
+  },
 };
 
 export const themeMeta = {
@@ -676,6 +790,10 @@ export const themeMeta = {
   folio: { title: '折页', blurb: '铜线压栏，编辑部' },
   washi: { title: '和纸', blurb: '靛蓝细线，信笺' },
   cinnabar: { title: '朱砂', blurb: '宽印在侧，朱批' },
+  lotus: { title: '芙蕖', blurb: '藕色题条，花笺' },
+  moss: { title: '苔痕', blurb: '石绿虚线，笔记' },
+  tide: { title: '沧浪', blurb: '双线压题，潮线' },
+  amber: { title: '琥珀', blurb: '蜜色蜡条，书签' },
 };
 
 export function normalizeLayout(name) {
@@ -695,6 +813,10 @@ const layoutCompilers = {
   folio: compileFolioLayout,
   washi: compileWashiLayout,
   cinnabar: compileCinnabarLayout,
+  lotus: compileLotusLayout,
+  moss: compileMossLayout,
+  tide: compileTideLayout,
+  amber: compileAmberLayout,
 };
 
 export function compileTheme({ tokens = {}, layout = 'wechat', css = '' } = {}) {
