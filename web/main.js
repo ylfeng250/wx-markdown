@@ -18,7 +18,8 @@ theme: tech
 也可以换主题，或把链接集中到文末：[Markdown](https://commonmark.org/)。
 
 \`\`\`js
-console.log('wx-md');
+const ok = html.includes('style=');
+console.log(ok); // 内联才进得了公众号
 \`\`\`
 `;
 

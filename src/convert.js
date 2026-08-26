@@ -11,7 +11,7 @@ import {
   renderArticle,
 } from './article.js';
 import { resolveTheme } from './theme-loader.js';
-import { highlightCss, themeNames } from './themes.js';
+import { themeNames } from './themes.js';
 
 marked.use(
   markedHighlight({
@@ -56,7 +56,7 @@ export function convertMarkdown(raw, {
     moveLinksToEnd,
   });
 
-  const html = juice.inlineContent(wrapped, `${resolved.css}\n${highlightCss}`, {
+  const html = juice.inlineContent(wrapped, resolved.css, {
     preserveImportant: true,
     preserveMediaQueries: false,
     preserveFontFaces: false,
