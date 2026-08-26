@@ -6,6 +6,7 @@ import {
   compileLotusLayout,
   compileMossLayout,
   compileQingLayout,
+  compileTerminalCode,
   compileTideLayout,
   compileWashiLayout,
 } from './layouts-editorial.js';
@@ -442,17 +443,6 @@ function compileTechLayout(t) {
   text-align: left;
 }
 
-#wechat-content pre {
-  background-color: ${t.codeBg};
-  border: 1px solid #32383f;
-  border-radius: 4px;
-  padding: 14px 16px;
-}
-
-#wechat-content pre code {
-  color: ${t.codeBlock};
-}
-
 #wechat-content th {
   background-color: ${t.heading};
   color: #f0f3f6;
@@ -471,55 +461,7 @@ function compileTechLayout(t) {
   border-bottom: 1px dashed ${t.border};
   padding: 0 0 6px;
 }
-
-#wechat-content pre .hljs,
-#wechat-content pre code {
-  color: #e6edf3;
-}
-
-#wechat-content pre .hljs-keyword,
-#wechat-content pre .hljs-doctag,
-#wechat-content pre .hljs-name,
-#wechat-content pre .hljs-section {
-  color: #ff7b72;
-}
-
-#wechat-content pre .hljs-string,
-#wechat-content pre .hljs-addition,
-#wechat-content pre .hljs-attribute,
-#wechat-content pre .hljs-meta-string {
-  color: #a5d6ff;
-}
-
-#wechat-content pre .hljs-comment,
-#wechat-content pre .hljs-quote,
-#wechat-content pre .hljs-meta {
-  color: #8b949e;
-}
-
-#wechat-content pre .hljs-number,
-#wechat-content pre .hljs-literal,
-#wechat-content pre .hljs-variable,
-#wechat-content pre .hljs-template-variable,
-#wechat-content pre .hljs-tag .hljs-attr {
-  color: #79c0ff;
-}
-
-#wechat-content pre .hljs-title,
-#wechat-content pre .hljs-title.class_,
-#wechat-content pre .hljs-title.function_,
-#wechat-content pre .hljs-selector-id,
-#wechat-content pre .hljs-selector-class {
-  color: #d2a8ff;
-}
-
-#wechat-content pre .hljs-type,
-#wechat-content pre .hljs-built_in,
-#wechat-content pre .hljs-builtin-name,
-#wechat-content pre .hljs-symbol {
-  color: #ffa657;
-}
-`;
+${compileTerminalCode(t)}`;
 }
 
 export const presets = {
@@ -822,7 +764,7 @@ const layoutCompilers = {
 export function compileTheme({ tokens = {}, layout = 'wechat', css = '' } = {}) {
   const resolvedLayout = normalizeLayout(layout);
   const merged = { ...defaultTokens, ...tokens };
-  const parts = [compileArticleCss(merged)];
+  const parts = [highlightCss, compileArticleCss(merged)];
   const compileLayout = layoutCompilers[resolvedLayout];
   if (compileLayout) {
     parts.push(compileLayout(merged));

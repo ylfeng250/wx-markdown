@@ -7,56 +7,101 @@ export function compileTerminalCode(t) {
   padding: 14px 16px;
 }
 
-#wechat-content pre code {
-  color: ${t.codeBlock};
-}
-
-#wechat-content pre .hljs,
-#wechat-content pre code {
+#wechat-content pre code,
+#wechat-content pre .hljs {
   color: #e6edf3;
 }
 
 #wechat-content pre .hljs-keyword,
 #wechat-content pre .hljs-doctag,
-#wechat-content pre .hljs-name,
-#wechat-content pre .hljs-section {
-  color: #ff7b72;
-}
-
-#wechat-content pre .hljs-string,
-#wechat-content pre .hljs-addition,
-#wechat-content pre .hljs-attribute,
-#wechat-content pre .hljs-meta-string {
-  color: #a5d6ff;
-}
-
-#wechat-content pre .hljs-comment,
-#wechat-content pre .hljs-quote,
-#wechat-content pre .hljs-meta {
-  color: #8b949e;
-}
-
-#wechat-content pre .hljs-number,
-#wechat-content pre .hljs-literal,
-#wechat-content pre .hljs-variable,
+#wechat-content pre .hljs-template-tag,
 #wechat-content pre .hljs-template-variable,
-#wechat-content pre .hljs-tag .hljs-attr {
-  color: #79c0ff;
+#wechat-content pre .hljs-type {
+  color: #ff7b72;
 }
 
 #wechat-content pre .hljs-title,
 #wechat-content pre .hljs-title.class_,
-#wechat-content pre .hljs-title.function_,
-#wechat-content pre .hljs-selector-id,
-#wechat-content pre .hljs-selector-class {
+#wechat-content pre .hljs-title.class_.inherited__,
+#wechat-content pre .hljs-title.function_ {
   color: #d2a8ff;
 }
 
-#wechat-content pre .hljs-type,
+#wechat-content pre .hljs-attr,
+#wechat-content pre .hljs-attribute,
+#wechat-content pre .hljs-literal,
+#wechat-content pre .hljs-number,
+#wechat-content pre .hljs-operator,
+#wechat-content pre .hljs-variable,
+#wechat-content pre .hljs-selector-attr,
+#wechat-content pre .hljs-selector-class,
+#wechat-content pre .hljs-selector-id,
+#wechat-content pre .hljs-property,
+#wechat-content pre .hljs-params {
+  color: #79c0ff;
+}
+
+#wechat-content pre .hljs-variable.language_ {
+  color: #ff7b72;
+}
+
+#wechat-content pre .hljs-regexp,
+#wechat-content pre .hljs-string,
+#wechat-content pre .hljs-meta .hljs-string,
+#wechat-content pre .hljs-meta-string {
+  color: #a5d6ff;
+}
+
 #wechat-content pre .hljs-built_in,
 #wechat-content pre .hljs-builtin-name,
 #wechat-content pre .hljs-symbol {
   color: #ffa657;
+}
+
+#wechat-content pre .hljs-comment,
+#wechat-content pre .hljs-code,
+#wechat-content pre .hljs-formula,
+#wechat-content pre .hljs-meta {
+  color: #8b949e;
+}
+
+#wechat-content pre .hljs-name,
+#wechat-content pre .hljs-quote,
+#wechat-content pre .hljs-selector-tag,
+#wechat-content pre .hljs-selector-pseudo {
+  color: #7ee787;
+}
+
+#wechat-content pre .hljs-subst {
+  color: #e6edf3;
+}
+
+#wechat-content pre .hljs-section {
+  color: #79c0ff;
+}
+
+#wechat-content pre .hljs-bullet {
+  color: #f2cc60;
+}
+
+#wechat-content pre .hljs-emphasis {
+  font-style: italic;
+}
+
+#wechat-content pre .hljs-strong {
+  font-weight: 700;
+}
+
+#wechat-content pre .hljs-addition {
+  color: #aff5b4;
+}
+
+#wechat-content pre .hljs-deletion {
+  color: #ffa198;
+}
+
+#wechat-content pre .hljs-link {
+  color: #a5d6ff;
 }
 `;
 }
