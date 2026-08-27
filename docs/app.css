@@ -115,6 +115,13 @@ select,
   color: var(--ink);
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
 select {
   appearance: none;
   cursor: pointer;
@@ -195,7 +202,8 @@ select {
 select:focus-visible,
 .ghost:focus-visible,
 .copy:focus-visible,
-.switch input:focus-visible {
+.switch input:focus-visible,
+.draft-field input:focus-visible {
   outline: 2px solid var(--celadon);
   outline-offset: 2px;
 }
@@ -358,6 +366,67 @@ body.is-dragging .drop {
   opacity: 1;
 }
 
+.draft-mask {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(228, 234, 230, 0.88);
+  z-index: 24;
+}
+
+.draft-mask.is-open {
+  display: grid;
+}
+
+.draft-card {
+  width: min(420px, calc(100% - 32px));
+  padding: 22px 24px 20px;
+  background: var(--paper);
+  box-shadow: 0 16px 40px rgba(27, 33, 30, 0.08);
+}
+
+.draft-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 14px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--mute);
+}
+
+.draft-field input[type="text"] {
+  font: 14px/1.5 var(--sans);
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+}
+
+.draft-field input[type="file"] {
+  font: 13px/1.5 var(--sans);
+  color: var(--ink);
+}
+
+.draft-hint {
+  min-height: 1.5em;
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--mute);
+}
+
+.draft-hint.is-fail {
+  color: var(--cinnabar);
+}
+
+.draft-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
 @media (max-width: 980px) {
   .app { padding: 14px 16px 16px; }
   .work { grid-template-columns: 1fr; gap: 20px; }
@@ -377,7 +446,7 @@ body.is-dragging .drop {
     gap: 12px;
   }
 
-  .copy { margin-left: auto; }
+  .actions { margin-left: auto; }
 
   .name { letter-spacing: 0.08em; }
 }

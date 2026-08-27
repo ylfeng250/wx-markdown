@@ -6,3 +6,5 @@ node_modules/
 /themes/
 wx-md-gallery.html
 *.tgz
+wx-markdown.json
+.env
