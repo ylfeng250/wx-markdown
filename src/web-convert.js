@@ -11,7 +11,7 @@ import {
   renderArticle,
 } from './article.js';
 import { inlineCss } from './inline-css.js';
-import { compileTheme, highlightCss, presets, themeMeta, themeNames } from './themes.js';
+import { compileTheme, presets, themeMeta, themeNames } from './themes.js';
 
 marked.use(
   markedHighlight({
@@ -65,7 +65,7 @@ export function convertMarkdown(raw, { theme, linksAtEnd } = {}) {
     moveLinksToEnd,
   });
 
-  const html = inlineCss(wrapped, `${compileTheme(preset)}\n${highlightCss}`);
+  const html = inlineCss(wrapped, compileTheme(preset));
   return {
     html,
     title: meta.title || firstHeading(markdown),

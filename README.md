@@ -1,11 +1,11 @@
 # 微信发稿台
 
-把 Markdown 转成可粘贴到微信公众号的 HTML。两条路：
+`wx-markdown` 把 Markdown 收成公众号还能粘贴的 HTML。
 
-- **命令行**：本地处理 `.md`，写出 HTML 并复制到剪贴板；配了公众号凭据后可推到草稿箱
-- **在线发稿台**：浏览器里写稿、看校样、复制。页面是静态的，可放到 GitHub Pages、Cloudflare Pages、Netlify。本地 `wx-md serve` 也可推草稿箱
+公众号会剥掉外部样式。这里按主题排好标题、引用和代码，把颜色和间距写成内联 `style`。命令行一条指令复制到剪贴板；也可以打开网页，左边写稿，右边看校样。
 
-公众号会丢掉外部 CSS。转换时把颜色和间距写成内联样式，复制后到公众号后台粘贴即可。
+- **命令行**：`wx-md article.md`，本地出 HTML 并复制；配了公众号凭据后可推到草稿箱
+- **在线发稿台**：浏览器里预览、换主题、点复制。页面是静态的，可放到 GitHub Pages、Cloudflare Pages、Netlify。本地 `wx-md serve` 也可推草稿箱
 
 ## 安装
 
@@ -130,6 +130,10 @@ wx-md publish article.md -t qing --title "标题" --digest "摘要"
 - `folio` 折页：铜线压栏，编辑部气味。
 - `washi` 和纸：靛蓝细线，信笺。
 - `cinnabar` 朱砂：左侧宽印，像朱批。
+- `lotus` 芙蕖：藕色题条，像花笺。
+- `moss` 苔痕：石绿虚线，像山行笔记。
+- `tide` 沧浪：双线压题，像潮线。
+- `amber` 琥珀：蜜色蜡条，像旧书签。
 
 自定义用 JSON 调色或 CSS 覆盖，文件放在 `themes/`，或把路径传给 `-t`。`extends` 也可以写 `tech`。
 
