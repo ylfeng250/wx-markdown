@@ -1,7 +1,7 @@
 {
   "name": "wx-markdown",
   "version": "1.0.0",
-  "description": "微信发稿台：命令行和网页把 Markdown 转成可粘贴到公众号的 HTML",
+  "description": "微信发稿台：把 Markdown 转成可粘贴到公众号的 HTML，也可推送到草稿箱",
   "type": "module",
   "bin": {
     "wx-md": "bin/wx-md.js",
@@ -20,6 +20,7 @@
     "serve": "node bin/wx-md.js serve",
     "build:web": "node scripts/build-web.js",
     "demo": "node bin/wx-md.js examples/demo.md --no-copy",
+    "test": "node --test tests/*.test.js",
     "link": "npm link",
     "prepublishOnly": "npm run build:web && node bin/wx-md.js --version"
   },

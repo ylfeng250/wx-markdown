@@ -5,6 +5,7 @@ import { moveLinksToEnd } from './links.js';
 import {
   findLocalImages,
   firstHeading,
+  generateDigest,
   parseBool,
   parseFrontMatter,
   renderArticle,
@@ -64,9 +65,11 @@ export function convertMarkdown(raw, { theme, linksAtEnd } = {}) {
     moveLinksToEnd,
   });
 
+  const html = inlineCss(wrapped, `${compileTheme(preset)}\n${highlightCss}`);
   return {
-    html: inlineCss(wrapped, `${compileTheme(preset)}\n${highlightCss}`),
+    html,
     title: meta.title || firstHeading(markdown),
+    digest: meta.digest || generateDigest(html),
     localImages: findLocalImages(wrapped),
     theme: name,
     themeSource: 'builtin',

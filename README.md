@@ -2,8 +2,8 @@
 
 把 Markdown 转成可粘贴到微信公众号的 HTML。两条路：
 
-- **命令行**：本地处理 `.md`，写出 HTML 并复制到剪贴板
-- **在线发稿台**：浏览器里写稿、看校样、复制。页面是静态的，可放到 GitHub Pages、Cloudflare Pages、Netlify
+- **命令行**：本地处理 `.md`，写出 HTML 并复制到剪贴板；配了公众号凭据后可推到草稿箱
+- **在线发稿台**：浏览器里写稿、看校样、复制。页面是静态的，可放到 GitHub Pages、Cloudflare Pages、Netlify。本地 `wx-md serve` 也可推草稿箱
 
 公众号会丢掉外部 CSS。转换时把颜色和间距写成内联样式，复制后到公众号后台粘贴即可。
 
@@ -32,7 +32,7 @@ npm run build:web
 wx-md serve
 ```
 
-浏览器打开 `http://127.0.0.1:3210`。左边写 Markdown，右边看校样，点复制后去公众号后台粘贴。也可以把 `.md` 拖进页面，或点「打开稿件」。
+浏览器打开 `http://127.0.0.1:3210`。左边写 Markdown，右边看校样，点复制后去公众号后台粘贴。也可以把 `.md` 拖进页面，或点「打开稿件」。本机已配置公众号凭据时，工具栏会出现「推草稿箱」。
 
 ```bash
 wx-md serve --port 4173 --no-open
@@ -72,6 +72,7 @@ wx-md article.md
 
 ```bash
 wx-md article.md -t qing         # 青瓷主题
+wx-md publish article.md --cover cover.png
 wx-md gallery                    # 一次看完全部内置主题
 wx-md article.md --open          # 需要时再打开预览页
 wx-md article.md --no-copy       # 只出文件，不碰剪贴板
@@ -88,8 +89,34 @@ wx-md -h
 ---
 title: 文章标题
 theme: ocean
+digest: 列表摘要
+cover: ./cover.png
+author: 名字
 ---
 ```
+
+## 推送到草稿箱
+
+只写入公众号后台的草稿，不会群发。封面必填。
+
+```bash
+wx-md publish article.md --cover cover.png
+wx-md publish article.md -t qing --title "标题" --digest "摘要"
+```
+
+凭据按这个顺序找：`--appid` / `--secret` → 环境变量 `WECHAT_APPID` / `WECHAT_SECRET` → 当前目录 `wx-markdown.json` → `~/.config/wx-markdown/config.json`。作者可用 `WECHAT_AUTHOR` 或 `wechat.author`。
+
+```json
+{
+  "wechat": {
+    "appid": "wx...",
+    "secret": "...",
+    "author": "名字"
+  }
+}
+```
+
+本地 `wx-md serve` 会读同一份配置。发稿台探测到本机接口后才显示「推草稿箱」。GitHub Pages 等静态托管没有接口，只能复制。网页里拖进去的稿件没有磁盘目录，正文里的相对路径图片推不上去；这类图请用命令行，或先换成图床链接。
 
 ## 主题
 
@@ -157,7 +184,7 @@ wx-md init-theme brand --css
 
 ## 图片
 
-本地图片预览能看，粘贴进公众号后不会跟着走。请先改成图床链接，或在编辑器里重新上传。
+本地图片预览能看，粘贴进公众号后不会跟着走。请先改成图床链接，或在编辑器里重新上传。用 `wx-md publish` 时，正文里的本地图会上传到微信并替换地址。
 
 ## 要求
 

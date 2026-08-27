@@ -13,7 +13,7 @@
 | CLI | `wx-md article.md` | `src/convert.js` + juice | 内置 + 本地 `themes/` + 文件路径 |
 | 网页 | 静态站 / `wx-md serve` | `src/web-convert.js` + 浏览器 CSSOM | 仅内置 |
 
-网页是产品面，要能部署到 GitHub Pages / Cloudflare Pages / Netlify。不要再给网页加 Node 接口。
+网页是产品面，要能部署到 GitHub Pages / Cloudflare Pages / Netlify。静态 `docs/` 不要加 Node 接口。本地 `wx-md serve` 可以提供 `/api/status`、`/api/publish`，只用来推草稿箱。
 
 ## 目录
 
@@ -28,7 +28,11 @@ src/theme-loader.js       CLI 读本地 JSON/CSS 主题（Node fs）
 src/convert.js            CLI 转换（juice 内联）
 src/web-convert.js        浏览器转换（不可 import node: / juice / theme-loader）
 src/inline-css.js         网页用：把主题 CSS 写进 style
-src/server.js             只托管 docs/，无 API
+src/config.js             公众号凭据：CLI 参数 / 环境变量 / wx-markdown.json
+src/wechat-api.js         token、正文图、封面上传（Node）
+src/publisher.js          draft/add
+src/publish.js            转 HTML、传图、建草稿的编排
+src/server.js             托管 docs/；本地 serve 另有 /api/status、/api/publish
 src/preview.js            CLI --open 的预览页（不是发稿台）
 src/gallery.js            wx-md gallery
 src/clipboard.js          系统剪贴板
@@ -46,8 +50,8 @@ examples/                 示例稿和自定义主题样例
 
 - **解析 / 题注 / 文末链接**：先改 `src/article.js` 或 `src/links.js`，再确认 CLI 和网页两边都还通。
 - **内置主题颜色或版式**：`src/themes.js`、`src/layouts-editorial.js`。token 名以 `tokenKeys` 为准，不要偷偷加新 key 却不更新 `theme-loader`。
-- **CLI 行为、自定义主题、剪贴板、gallery**：`src/convert.js` 和 Node 侧文件。本地主题继续走 `theme-loader.js`。
-- **发稿台 UI**：只改 `web/`，然后 `npm run build:web`。不要手改 `docs/app.js`。
+- **CLI 行为、自定义主题、剪贴板、gallery、草稿箱**：`src/convert.js`、`src/publish.js` 和 Node 侧文件。本地主题继续走 `theme-loader.js`。`web-convert.js` 仍禁止 `fs`。
+- **发稿台 UI**：只改 `web/`，然后 `npm run build:web`。不要手改 `docs/app.js`。推草稿箱按钮只在探测到本机 `/api/status` 后出现。
 - **网页转换**：`src/web-convert.js`、`src/inline-css.js`。这里必须能被 esbuild 打进浏览器。
 
 ## 命令
@@ -58,7 +62,9 @@ npm run build:web                          # 更新 docs/
 node bin/wx-md.js examples/demo.md --no-copy --no-open
 node bin/wx-md.js serve --port 4173 --no-open
 node bin/wx-md.js examples/demo.md -t qing --no-copy --no-open
+node bin/wx-md.js publish examples/demo.md --cover cover.png
 node bin/wx-md.js themes
+npm test
 ```
 
 Node 18+。ESM only（`"type": "module"`）。
@@ -69,16 +75,16 @@ Node 18+。ESM only（`"type": "module"`）。
 
 1. **输出是内联样式的 `#wechat-content`**。预览可以看，复制出去才是产品。
 2. **两条转换链并存**。不要为了共用把 juice 打进网页，也不要把 `fs` / `process.cwd()` 引进 `web-convert.js`。
-3. **网页保持静态**。`src/server.js` 只 serve `docs/`。GitHub Pages 没有 Node。
+3. **网页保持静态**。GitHub Pages 没有 Node。`docs/` 仍然无接口。本地 `wx-md serve` 可以有 `/api/*`，密钥只从本机配置读，不进浏览器。
 4. **复制用 `text/html` + `text/plain`**。只写纯文本，公众号会丢颜色。
 5. **文末链接**：主题可默认开启（如 `tech`），front matter / `--links-at-end` / 页面开关能覆盖。同一 URL 只编一个号。
-6. **本地图片**：预览可以，粘贴进公众号不会跟着走。不要假装做了图床。
+6. **本地图片**：预览可以，粘贴进公众号不会跟着走。不要假装网页做了图床。`wx-md publish` 会把正文本地图上传到微信。
 7. **`.gitignore` 忽略 `*.html`**，例外只有 `web/index.html`、`docs/index.html`。CLI 生成的 `article.html`、`examples/demo.html` 不要提交。本地 `themes/` 也不要提交。
 
 ## 文案和 UI
 
 - 产品名：**微信发稿台**。命令仍叫 `wx-md`。
-- 界面用中文，句子短，说明做什么，不解释实现。按钮：打开稿件、复制、已复制、失败。栏目标：原稿、校样。
+- 界面用中文，句子短，说明做什么，不解释实现。按钮：打开稿件、复制、已复制、失败、推草稿箱。栏目标：原稿、校样。
 - 发稿台视觉：青瓷纸面、宋体字标、双圈小印。克制，不要再加深色木案或盖住预览的大印章。
 - 用户可见字符串改了，同步 `README.md`、`src/cli.js` 的帮助、`web/main.js` 的示例稿。
 
@@ -98,8 +104,8 @@ Node 18+。ESM only（`"type": "module"`）。
 
 ## 不要做
 
-- 不要加框架、不要给发稿台接后端、不要在网页里读用户磁盘上的自定义主题。
+- 不要加框架、不要给静态发稿台接后端、不要在网页里读用户磁盘上的自定义主题。
 - 不要把 `docs/app.js` 当源码改。
 - 不要为了「好看」改公众号正文的默认字号和行高，那是主题 token 的事。
-- 不要提交 `.env`、npm token、本地 `themes/`。
+- 不要提交 `.env`、`wx-markdown.json`、npm token、本地 `themes/`。
 - 除非用户明确要求，否则不要 commit、不要 push、不要改 git config。

@@ -29,10 +29,13 @@
         <input id="file" type="file" accept=".md,.markdown,text/markdown,text/plain" hidden>
       </div>
 
-      <button id="copy-btn" type="button" class="copy" aria-label="复制到公众号">
-        <span class="seal" aria-hidden="true"></span>
-        <span id="copy-word">复制</span>
-      </button>
+      <div class="actions">
+        <button id="draft-btn" type="button" class="ghost" hidden>推草稿箱</button>
+        <button id="copy-btn" type="button" class="copy" aria-label="复制到公众号">
+          <span class="seal" aria-hidden="true"></span>
+          <span id="copy-word">复制</span>
+        </button>
+      </div>
     </header>
 
     <main class="work">
@@ -63,6 +66,29 @@
 
   <div class="drop" id="drop" aria-hidden="true">
     <p>放开即可打开稿件</p>
+  </div>
+
+  <div class="draft-mask" id="draft-panel" hidden>
+    <div class="draft-card">
+      <p class="slab">推到草稿箱</p>
+      <label class="draft-field">
+        <span>标题</span>
+        <input id="draft-title" type="text" autocomplete="off">
+      </label>
+      <label class="draft-field">
+        <span>摘要</span>
+        <input id="draft-digest" type="text" autocomplete="off">
+      </label>
+      <label class="draft-field">
+        <span>封面</span>
+        <input id="draft-cover" type="file" accept="image/*">
+      </label>
+      <p class="draft-hint" id="draft-hint"></p>
+      <div class="draft-actions">
+        <button id="draft-cancel" type="button" class="ghost">取消</button>
+        <button id="draft-confirm" type="button" class="copy">推送</button>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>

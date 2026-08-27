@@ -7,7 +7,7 @@ theme: tech
 
 # 把 Markdown 发到公众号
 
-左边写稿，右边看校样。点复制，再到公众号后台粘贴。
+左边写稿，右边看校样。点复制，再到公众号后台粘贴。本地用 wx-md serve 时，还可以推到草稿箱。
 
 ## 它会做什么
 
@@ -24,12 +24,15 @@ console.log('wx-md');
 
 const FAIL = '<p class="fail">转换失败，请检查稿件后重试。</p>';
 
+const UNCONFIGURED = '先配置 WECHAT_APPID 和 WECHAT_SECRET，再推草稿箱。';
+
 const state = {
   themes: {},
   theme: 'tech',
   linksAtEnd: true,
   timer: 0,
   drag: 0,
+  draft: null,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -137,6 +140,12 @@ window.addEventListener('DOMContentLoaded', () => {
     scheduleRender();
   });
   $('copy-btn').addEventListener('click', copyArticle);
+  $('draft-btn').addEventListener('click', openDraft);
+  $('draft-cancel').addEventListener('click', closeDraft);
+  $('draft-confirm').addEventListener('click', submitDraft);
+  $('draft-panel').addEventListener('click', (event) => {
+    if (event.target === $('draft-panel')) closeDraft();
+  });
   $('open-btn').addEventListener('click', () => $('file').click());
   $('file').addEventListener('change', async (event) => {
     const file = event.target.files?.[0];
@@ -166,4 +175,122 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!file) return;
     applyMarkdown(await file.text(), file.name);
   });
+
+  probeDraftApi();
 });
+
+async function probeDraftApi() {
+  try {
+    const response = await fetch('/api/status', { headers: { Accept: 'application/json' } });
+    if (!response.ok) return;
+    const data = await response.json();
+    if (!data?.ok) return;
+    state.draft = { configured: Boolean(data.configured) };
+    $('draft-btn').hidden = false;
+  } catch {
+    // 静态托管没有本机接口，保持只复制。
+  }
+}
+
+function setDraftHint(text, fail = false) {
+  const hint = $('draft-hint');
+  hint.textContent = text || '';
+  hint.classList.toggle('is-fail', fail);
+}
+
+function openDraft() {
+  if (!state.draft) return;
+  if (!state.draft.configured) {
+    setDraftHint(UNCONFIGURED, true);
+  } else {
+    setDraftHint('');
+  }
+
+  try {
+    const result = convertMarkdown($('source').value, {
+      theme: state.theme,
+      linksAtEnd: state.linksAtEnd,
+    });
+    $('draft-title').value = result.title || '';
+    $('draft-digest').value = result.digest || '';
+  } catch {
+    $('draft-title').value = '';
+    $('draft-digest').value = '';
+  }
+
+  $('draft-cover').value = '';
+  $('draft-panel').hidden = false;
+  $('draft-panel').classList.add('is-open');
+  $('draft-title').focus();
+}
+
+function closeDraft() {
+  $('draft-panel').classList.remove('is-open');
+  $('draft-panel').hidden = true;
+}
+
+function fileToCover(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve({
+        filename: file.name,
+        mime: file.type || 'image/png',
+        data: String(reader.result).split(',').pop(),
+      });
+    };
+    reader.onerror = () => reject(new Error('读封面失败'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function submitDraft() {
+  if (!state.draft?.configured) {
+    setDraftHint(UNCONFIGURED, true);
+    return;
+  }
+
+  const file = $('draft-cover').files?.[0];
+  if (!file) {
+    setDraftHint('请先选封面。', true);
+    return;
+  }
+
+  const confirm = $('draft-confirm');
+  confirm.disabled = true;
+  confirm.textContent = '推送中';
+  setDraftHint('正在推送…');
+
+  try {
+    const cover = await fileToCover(file);
+    const response = await fetch('/api/publish', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        markdown: $('source').value,
+        theme: state.theme,
+        linksAtEnd: state.linksAtEnd,
+        title: $('draft-title').value.trim(),
+        digest: $('draft-digest').value.trim(),
+        cover,
+      }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || '推送失败');
+    }
+    const extra = data.missingImages?.length
+      ? `，有 ${data.missingImages.length} 张本地图未上传`
+      : '';
+    setDraftHint(`已推到草稿箱${extra}。`);
+    $('draft-btn').textContent = '已推送';
+    setTimeout(() => {
+      $('draft-btn').textContent = '推草稿箱';
+    }, 1600);
+  } catch (error) {
+    setDraftHint(error.message || '推送失败', true);
+  } finally {
+    confirm.disabled = false;
+    confirm.textContent = '推送';
+  }
+}

@@ -7,6 +7,7 @@ import { gallerySource, renderGalleryPage } from './gallery.js';
 import { formatThemeList, initTheme } from './theme-loader.js';
 import { openFile } from './open.js';
 import { renderPreviewPage } from './preview.js';
+import { publishArticle } from './publish.js';
 import { startServer } from './server.js';
 
 const require = createRequire(import.meta.url);
@@ -16,13 +17,14 @@ const HELP = `wx-md ${version} — 微信发稿台。Markdown 转微信公众号
 
 用法:
   wx-md <markdown文件> [选项]
+  wx-md publish <markdown文件> [选项]
   wx-md serve [选项]
   wx-md gallery [markdown文件]
   wx-md themes
   wx-md init-theme <名字> [选项]
 
 转换后会在终端完成：写出 HTML，并把正文复制到剪贴板。
-然后打开公众号后台粘贴即可。
+然后打开公众号后台粘贴即可。本地配置了公众号凭据后，也可以推到草稿箱。
 
 选项:
   -o, --out <文件>     输出路径（默认与 md 同名同目录）
@@ -34,6 +36,12 @@ const HELP = `wx-md ${version} — 微信发稿台。Markdown 转微信公众号
       --no-open        不打开浏览器（默认）
       --links-at-end   把正文链接收到文末（覆盖主题设置）
       --no-links-at-end  正文里保留原链接
+      --cover <文件>   封面图（推草稿箱必填）
+      --title <标题>   覆盖文章标题
+      --digest <摘要>  覆盖摘要（不超过 120 字节）
+      --author <作者>  覆盖作者
+      --appid <id>     公众号 AppID
+      --secret <密钥>  公众号 AppSecret
       --port <端口>    网页服务端口（默认 3210）
       --host <地址>    网页服务地址（默认 127.0.0.1）
       --list-themes    列出内置和本地主题
@@ -48,6 +56,7 @@ init-theme:
 示例:
   wx-md article.md
   wx-md serve
+  wx-md publish article.md --cover cover.png
   wx-md article.md -t qing
   wx-md gallery
   wx-md gallery article.md
@@ -72,6 +81,12 @@ function parseArgs(argv) {
     css: false,
     force: false,
     linksAtEnd: undefined,
+    cover: null,
+    title: null,
+    digest: null,
+    author: null,
+    appid: null,
+    secret: null,
     port: 3210,
     host: '127.0.0.1',
   };
@@ -126,6 +141,30 @@ function parseArgs(argv) {
         break;
       case '--no-links-at-end':
         args.linksAtEnd = false;
+        break;
+      case '--cover':
+        args.cover = argv[i + 1];
+        i += 1;
+        break;
+      case '--title':
+        args.title = argv[i + 1];
+        i += 1;
+        break;
+      case '--digest':
+        args.digest = argv[i + 1];
+        i += 1;
+        break;
+      case '--author':
+        args.author = argv[i + 1];
+        i += 1;
+        break;
+      case '--appid':
+        args.appid = argv[i + 1];
+        i += 1;
+        break;
+      case '--secret':
+        args.secret = argv[i + 1];
+        i += 1;
         break;
       case '--port':
         args.port = Number(argv[i + 1]);
@@ -205,6 +244,37 @@ function requireOptionValue(value, flag) {
   }
 }
 
+async function cmdPublish(args) {
+  const input = args._[1];
+  if (!input) {
+    throw new Error('用法：wx-md publish <markdown文件> --cover <封面>');
+  }
+
+  const inputPath = resolve(input);
+  const source = readFileSync(inputPath, 'utf8');
+  const result = await publishArticle({
+    source,
+    inputPath,
+    theme: args.theme,
+    cwd: process.cwd(),
+    markdownDir: dirname(inputPath),
+    linksAtEnd: args.linksAtEnd,
+    title: args.title,
+    digest: args.digest,
+    cover: args.cover,
+    author: args.author,
+    appid: args.appid,
+    secret: args.secret,
+    onLog: (line) => process.stdout.write(`${line}\n`),
+  });
+
+  process.stdout.write(`已推到草稿箱。media_id: ${result.mediaId}\n`);
+  if (result.missingImages.length) {
+    process.stderr.write(`有 ${result.missingImages.length} 张本地图片未上传，草稿里仍是原路径。\n`);
+  }
+  return true;
+}
+
 async function convertFile(args) {
   if (args.out === undefined) {
     throw new Error('--out 缺少参数');
@@ -282,7 +352,7 @@ async function convertFile(args) {
   }
 }
 
-function runUtility(args) {
+async function runUtility(args) {
   if (args.help) {
     process.stdout.write(HELP);
     return true;
@@ -320,6 +390,10 @@ function runUtility(args) {
     return true;
   }
 
+  if (args._[0] === 'publish') {
+    return cmdPublish(args);
+  }
+
   if (args._[0] === 'serve') {
     if (!Number.isInteger(args.port) || args.port <= 0) {
       throw new Error('--port 必须是正整数');
@@ -340,7 +414,7 @@ function runUtility(args) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (runUtility(args)) {
+  if (await runUtility(args)) {
     return;
   }
   await convertFile(args);

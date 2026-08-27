@@ -6,6 +6,7 @@ import { moveLinksToEnd } from './links.js';
 import {
   findLocalImages,
   firstHeading,
+  generateDigest,
   parseBool,
   parseFrontMatter,
   renderArticle,
@@ -66,6 +67,9 @@ export function convertMarkdown(raw, {
   return {
     html,
     title: meta.title || firstHeading(markdown),
+    digest: meta.digest || generateDigest(html),
+    cover: meta.cover || '',
+    author: meta.author || '',
     localImages: findLocalImages(html),
     theme: resolved.label,
     themeSource: resolved.source,
